@@ -39,3 +39,13 @@ docker-compose exec web python -m pytest -l
 
 # list the 2 slowest tests
 docker-compose exec web python -m pytest --durations=2
+
+
+docker push registry.heroku.com/sleepy-thicket-45456/web:latest
+
+heroku container:release web --app sleepy-thicket-45456
+ 
+https://sleepy-thicket-45456.herokuapp.com/ping/
+ 
+http --json POST https://sleepy-thicket-45456.herokuapp.com/summaries/ url=https://testdriven.io
+
