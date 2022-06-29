@@ -49,3 +49,5 @@ https://sleepy-thicket-45456.herokuapp.com/ping/
  
 http --json POST https://sleepy-thicket-45456.herokuapp.com/summaries/ url=https://testdriven.io
 
+# retrieve Heroku auth token:
+heroku auth:token
