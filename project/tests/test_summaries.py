@@ -37,9 +37,14 @@ def test_create_summaries_invalid_json(test_app):
     assert response.json()["detail"][0]["msg"] == "URL scheme not permitted"
 
 
-def test_read_summary(test_app_with_db):
+def test_read_summary(test_app_with_db, monkeypatch):
+    def mock_generate_summary(summary_id, url):
+        return None
+
+    monkeypatch.setattr(summaries, "generate_summary", mock_generate_summary)
+
     response = test_app_with_db.post(
-        "/summaries/", data=json.dumps({"url": "http://testdriven.io"})
+        "/summaries/", data=json.dumps({"url": "https://foo.bar"})
     )
     summary_id = response.json()["id"]
 
@@ -48,8 +53,8 @@ def test_read_summary(test_app_with_db):
 
     response_dict = response.json()
     assert response_dict["id"] == summary_id
-    assert response_dict["url"] == "http://testdriven.io"
-    assert response_dict["summary"]
+    assert response_dict["url"] == "https://foo.bar"
+    assert response_dict["summary"] == ''
     assert response_dict["created_at"]
 
 
@@ -72,9 +77,14 @@ def test_read_summary_incorrect_id(test_app_with_db):
     }
 
 
-def test_read_all_summaries(test_app_with_db):
+def test_read_all_summaries(test_app_with_db, monkeypatch):
+    def mock_generate_summary(summary_id, url):
+        return None
+
+    monkeypatch.setattr(summaries, "generate_summary", mock_generate_summary)
+
     response = test_app_with_db.post(
-        "/summaries/", data=json.dumps({"url": "http://testdriven.io"})
+        "/summaries/", data=json.dumps({"url": "https://foo.bar"})
     )
     summary_id = response.json()["id"]
 
@@ -85,15 +95,20 @@ def test_read_all_summaries(test_app_with_db):
     assert len(list(filter(lambda d: d["id"] == summary_id, response_list))) == 1
 
 
-def test_remove_summary(test_app_with_db):
+def test_remove_summary(test_app_with_db, monkeypatch):
+    def mock_generate_summary(summary_id, url):
+        return None
+
+    monkeypatch.setattr(summaries, "generate_summary", mock_generate_summary)
+
     response = test_app_with_db.post(
-        "/summaries/", data=json.dumps({"url": "http://testdriven.io"})
+        "/summaries/", data=json.dumps({"url": "https://foo.bar"})
     )
     summary_id = response.json()["id"]
 
     response = test_app_with_db.delete(f"/summaries/{summary_id}/")
     assert response.status_code == 200
-    assert response.json() == {"id": summary_id, "url": "http://testdriven.io"}
+    assert response.json() == {"id": summary_id, "url": "https://foo.bar"}
 
 
 def test_remove_summary_incorrect_id(test_app_with_db):
@@ -115,21 +130,26 @@ def test_remove_summary_incorrect_id(test_app_with_db):
     }
 
 
-def test_update_summary(test_app_with_db):
+def test_update_summary(test_app_with_db, monkeypatch):
+    def mock_generate_summary(summary_id, url):
+        return None
+
+    monkeypatch.setattr(summaries, "generate_summary", mock_generate_summary)
+
     response = test_app_with_db.post(
-        "/summaries/", data=json.dumps({"url": "http://testdriven.io"})
+        "/summaries/", data=json.dumps({"url": "https://foo.bar"})
     )
     summary_id = response.json()["id"]
 
     response = test_app_with_db.put(
         f"/summaries/{summary_id}/",
-        data=json.dumps({"url": "http://testdriven.io", "summary": "updated!"}),
+        data=json.dumps({"url": "https://foo.bar", "summary": "updated!"}),
     )
     assert response.status_code == 200
 
     response_dict = response.json()
     assert response_dict["id"] == summary_id
-    assert response_dict["url"] == "http://testdriven.io"
+    assert response_dict["url"] == "https://foo.bar"
     assert response_dict["summary"] == "updated!"
     assert response_dict["created_at"]
 
@@ -139,13 +159,13 @@ def test_update_summary(test_app_with_db):
     [
         [
             999,
-            {"url": "http://testdriven.io", "summary": "updated!"},
+            {"url": "https://foo.bar", "summary": "updated!"},
             404,
             "Summary not found",
         ],
         [
             0,
-            {"url": "http://testdriven.io", "summary": "updated!"},
+            {"url": "https://foo.bar", "summary": "updated!"},
             422,
             [
                 {
