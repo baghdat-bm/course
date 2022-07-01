@@ -51,3 +51,6 @@ http --json POST https://sleepy-thicket-45456.herokuapp.com/summaries/ url=https
 
 # retrieve Heroku auth token:
 heroku auth:token
+
+# to generate a long-term token
+heroku authorizations:create
